@@ -41,7 +41,7 @@ npm run build          # Compile TypeScript
 
 ## Detection Logic (How It Works)
 
-The scanner searches two GitHub repositories and classifies each destination into one of three statuses: **Active**, **Stub/No-Op**, or **Commented Out**.
+The scanner searches two GitHub repositories and classifies each destination into one of four statuses: **Supported**, **Stub/No-Op**, **Commented Out**, or **Not Detected**.
 
 ### Source Repositories
 
@@ -66,8 +66,8 @@ For each action destination found, we fetch its `index.ts` and classify the `onD
 #### Commented Out
 If no uncommented `onDelete` line exists in the file (i.e., every occurrence is preceded by `//`), the destination is classified as **Commented Out**. These are destinations where the template was scaffolded but deletion was never implemented.
 
-#### Active
-A destination is classified as **Active** if its `onDelete` handler contains actual implementation logic. We detect this by checking the first 15 lines after the `onDelete` declaration (ignoring comment lines) for any of these patterns:
+#### Supported
+A destination is classified as **Supported** if its `onDelete` handler contains actual implementation logic. We detect this by checking the first 15 lines after the `onDelete` declaration (ignoring comment lines) for any of these patterns:
 
 | Pattern | What it indicates |
 |---------|-------------------|

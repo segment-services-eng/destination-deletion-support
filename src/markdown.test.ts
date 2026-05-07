@@ -20,7 +20,7 @@ describe("generateMarkdown", () => {
 
     const result = generateMarkdown(destinations);
 
-    expect(result).toContain("**Total: 2** | **Active: 1**");
+    expect(result).toContain("**Total: 2** | **Supported: 1**");
     expect(result).toContain("## All Destinations (2)");
   });
 
@@ -34,7 +34,7 @@ describe("generateMarkdown", () => {
     const result = generateMarkdown(destinations);
 
     expect(result).toContain("| Deletion Status |");
-    expect(result).toContain("| Active |");
+    expect(result).toContain("| Supported |");
     expect(result).toContain("| Stub/No-Op |");
     expect(result).toContain("| Commented Out |");
   });
@@ -77,13 +77,13 @@ describe("generateMarkdown", () => {
     const result = generateMarkdown([]);
 
     expect(result).toContain("### Status Legend");
-    expect(result).toContain("Has a working `onDelete` handler");
+    expect(result).toContain("Has a working `onDelete` handler that makes API calls");
   });
 
   it("handles empty destination list", () => {
     const result = generateMarkdown([]);
 
-    expect(result).toContain("**Total: 0** | **Active: 0**");
+    expect(result).toContain("**Total: 0** | **Supported: 0**");
     expect(result).toContain("## All Destinations (0)");
   });
 

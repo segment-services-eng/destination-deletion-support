@@ -1,7 +1,7 @@
 import type { Destination, DeletionStatus } from "./types";
 
 const STATUS_LABELS: Readonly<Record<DeletionStatus, string>> = {
-  "active": "Active",
+  "active": "Supported",
   "noop": "Stub/No-Op",
   "commented-out": "Commented Out",
   "unsupported": "Not Detected",
@@ -18,7 +18,7 @@ This list is derived by scanning source code in:
 1. **Action Destinations** (\`segmentio/action-destinations\`): Destinations with an \`onDelete\` handler
 2. **Legacy Integrations** (\`segmentio/integrations\`): Destinations with a \`prototype.delete\` method
 
-**Total: ${total}** | **Active: ${activeCount}**
+**Total: ${total}** | **Supported: ${activeCount}**
 
 ## All Destinations (${total})
 
@@ -35,7 +35,7 @@ const footer = (timestamp: string): string => `
 
 | Status | Meaning |
 |--------|---------|
-| Active | Has a working \`onDelete\` handler that makes API calls |
+| Supported | Has a working \`onDelete\` handler that makes API calls |
 | Stub/No-Op | Declares \`onDelete\` but the handler is empty |
 | Commented Out | Has a commented-out \`onDelete\` template |
 | Not Detected | No deletion handler found in source code |
