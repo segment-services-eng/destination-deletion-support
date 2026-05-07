@@ -18,10 +18,13 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Generate deletion support list
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node generate-deletion-support.mjs
+        run: npm run generate
 
       - name: Upload deletion support list
         uses: actions/upload-artifact@v4
