@@ -42,7 +42,7 @@ npm run build          # Compile TypeScript
 ## CI/CD
 
 - **CI** (`ci.yml`) runs on every PR: type checks and tests with 100% coverage enforcement
-- **Daily generation** (`generate-deletion-support.yml`) runs at 8:00 UTC, creates a PR with updated output, and auto-merges after CI passes
+- **Daily generation** (`generate-deletion-support.yml`) runs at 8:00 UTC, runs tests internally, creates a PR with updated output, reports the `test` status check, and auto-merges
 - The generation workflow fails hard if results appear incomplete (no action destinations, no legacy integrations, or fewer than 30 supported destinations detected)
 
 ---
