@@ -1,11 +1,41 @@
 {
   "name": "destination-deletion-support",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Automated tracking of Segment destinations that support GDPR/CCPA deletion requests",
   "type": "module",
   "scripts": {
-    "generate": "node generate-deletion-support.mjs"
+    "generate": "tsx src/index.ts",
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "tsc --noEmit"
   },
-  "keywords": ["segment", "twilio", "gdpr", "ccpa", "deletion", "privacy"],
-  "license": "MIT"
+  "keywords": [
+    "segment",
+    "twilio",
+    "gdpr",
+    "ccpa",
+    "deletion",
+    "privacy"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JasonSooter/destination-deletion-support.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JasonSooter/destination-deletion-support/issues"
+  },
+  "homepage": "https://github.com/JasonSooter/destination-deletion-support#readme",
+  "devDependencies": {
+    "@types/node": "^25.6.1",
+    "@vitest/coverage-v8": "^4.1.5",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.5"
+  }
 }
