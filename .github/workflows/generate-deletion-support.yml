@@ -45,7 +45,7 @@ jobs:
             echo "No changes detected"
             exit 0
           fi
-          BRANCH="auto/update-deletion-support-$(date +%Y%m%d-%H%M%S)"
+          BRANCH="auto/update-deletion-support-${{ github.run_id }}"
           git checkout -b "$BRANCH"
           git commit -m "Update deletion support list"
           git push -u origin "$BRANCH"
