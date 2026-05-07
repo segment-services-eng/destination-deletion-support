@@ -27,7 +27,7 @@ jobs:
 
       - name: Generate deletion support list
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.SEGMENTIO_TOKEN }}
         run: npm run generate
 
       - name: Create PR if output changed

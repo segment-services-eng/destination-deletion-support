@@ -25,6 +25,17 @@ const main = (): void => {
 
   const actionDests = scanActionDestinations(client);
   const legacyDests = scanLegacyIntegrations(client);
+
+  if (actionDests.length === 0) {
+    console.error("ERROR: No action destinations found. Check that SEGMENTIO_TOKEN has access to segmentio/action-destinations.");
+    process.exit(1);
+  }
+
+  if (legacyDests.length === 0) {
+    console.error("ERROR: No legacy integrations found. Check that SEGMENTIO_TOKEN has access to segmentio/integrations.");
+    process.exit(1);
+  }
+
   const uniqueLegacy = deduplicateLegacy(actionDests, legacyDests);
   const detected = [...actionDests, ...uniqueLegacy, ...MANUAL_OVERRIDES];
   const allDestinations = mergeWithCatalog(detected, FALLBACK_CATALOG);
@@ -32,6 +43,11 @@ const main = (): void => {
   const activeCount = allDestinations.filter((d) => d.status === "active").length;
   console.log(`Total catalog destinations: ${allDestinations.length}`);
   console.log(`Destinations with active deletion support: ${activeCount}`);
+
+  if (activeCount < 30) {
+    console.error(`ERROR: Only ${activeCount} destinations detected as supported. Expected at least 30. Results are likely incomplete.`);
+    process.exit(1);
+  }
 
   const markdown = generateMarkdown(allDestinations);
   const csv = generateCsv(allDestinations);
