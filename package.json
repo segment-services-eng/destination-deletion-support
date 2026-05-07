@@ -1,0 +1,11 @@
+{
+  "name": "destination-deletion-support",
+  "version": "1.0.0",
+  "description": "Automated tracking of Segment destinations that support GDPR/CCPA deletion requests",
+  "type": "module",
+  "scripts": {
+    "generate": "node generate-deletion-support.mjs"
+  },
+  "keywords": ["segment", "twilio", "gdpr", "ccpa", "deletion", "privacy"],
+  "license": "MIT"
+}
