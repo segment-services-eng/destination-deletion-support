@@ -3,10 +3,12 @@ import { writeFileSync } from "fs";
 import { createGitHubClient } from "./github";
 import { scanActionDestinations, scanLegacyIntegrations, deduplicateLegacy, mergeWithCatalog } from "./scanner";
 import { generateMarkdown } from "./markdown";
+import { generateCsv } from "./csv";
 import { FALLBACK_CATALOG } from "./catalog";
 import { MANUAL_OVERRIDES } from "./overrides";
 
-const OUTPUT_FILE = "deletion-support.md";
+const OUTPUT_MD = "deletion-support.md";
+const OUTPUT_CSV = "deletion-support.csv";
 
 const execute = (args: string): string => {
   try {
@@ -32,9 +34,11 @@ const main = (): void => {
   console.log(`Destinations with active deletion support: ${activeCount}`);
 
   const markdown = generateMarkdown(allDestinations);
-  writeFileSync(OUTPUT_FILE, markdown);
+  const csv = generateCsv(allDestinations);
+  writeFileSync(OUTPUT_MD, markdown);
+  writeFileSync(OUTPUT_CSV, csv);
 
-  console.log(`\nDone! Output written to ${OUTPUT_FILE}`);
+  console.log(`\nDone! Output written to ${OUTPUT_MD} and ${OUTPUT_CSV}`);
 };
 
 main();

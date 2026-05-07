@@ -25,12 +25,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JasonSooter/destination-deletion-support.git"
+    "url": "git+https://github.com/segment-services-eng/destination-deletion-support.git"
   },
   "bugs": {
-    "url": "https://github.com/JasonSooter/destination-deletion-support/issues"
+    "url": "https://github.com/segment-services-eng/destination-deletion-support/issues"
   },
-  "homepage": "https://github.com/JasonSooter/destination-deletion-support#readme",
+  "homepage": "https://github.com/segment-services-eng/destination-deletion-support#readme",
   "devDependencies": {
     "@types/node": "^25.6.1",
     "@vitest/coverage-v8": "^4.1.5",
