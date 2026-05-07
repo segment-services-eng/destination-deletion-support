@@ -8,12 +8,19 @@ The [official Segment docs](https://www.twilio.com/docs/segment/privacy/faq#whic
 
 ## Generated Output
 
-See [`deletion-support.md`](./deletion-support.md) for the current list.
+- [`deletion-support.md`](./deletion-support.md) — full context with summary, legend, and source links
+- [`deletion-support.csv`](./deletion-support.csv) — sortable/searchable table in GitHub's UI
 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) >= 22
 - [GitHub CLI (`gh`)](https://cli.github.com/) authenticated with access to `segmentio` repos
+- A `SEGMENTIO_TOKEN` GitHub Actions secret (required for CI/CD generation). To create:
+  1. Go to GitHub Settings → Developer settings → Fine-grained personal access tokens
+  2. Set **Resource owner** to the `segmentio` org
+  3. Under **Repository access**, select `segmentio/action-destinations` and `segmentio/integrations`
+  4. Under **Permissions**, grant **Contents: Read-only**
+  5. Add the token as a secret named `SEGMENTIO_TOKEN` in this repo's Settings → Secrets → Actions
 
 ## Usage
 
@@ -34,8 +41,9 @@ npm run build          # Compile TypeScript
 
 ## CI/CD
 
-- **CI** runs on every PR: type checks and tests with 100% coverage enforcement
-- **Daily generation** runs at 8:00 UTC and uploads the markdown as an artifact
+- **CI** (`ci.yml`) runs on every PR: type checks and tests with 100% coverage enforcement
+- **Daily generation** (`generate-deletion-support.yml`) runs at 8:00 UTC, creates a PR with updated output, and auto-merges after CI passes
+- The generation workflow fails hard if results appear incomplete (no action destinations, no legacy integrations, or fewer than 30 supported destinations detected)
 
 ---
 
@@ -48,14 +56,18 @@ The scanner searches two GitHub repositories and classifies each destination int
 | Repository | What we look for |
 |------------|------------------|
 | `segmentio/action-destinations` | `onDelete` handlers in `packages/destination-actions/src/destinations/*/index.ts` |
-| `segmentio/integrations` | `prototype.delete` methods or `exports.delete` in mapper files under `integrations/*/` |
+| `segmentio/integrations` | `prototype.delete`, `exports.delete`, `delete(event)` class methods, and `createDirectIntegration` entries |
 
 ### Step 1: Discovery
 
 We use the GitHub Code Search API to find all files that reference deletion handlers:
 
 - **Action Destinations**: Search for `onDelete` in `index.ts` files within the destinations path
-- **Legacy Integrations**: Search for `prototype.delete` in integration source files, and `exports.delete` in mapper files
+- **Legacy Integrations**: Four patterns are searched:
+  1. `prototype.delete` in integration source files
+  2. `exports.delete` in mapper files
+  3. `delete(event)` class methods in index files
+  4. `createDirectIntegration` entries in `integrations/index.js` (these all share a common delete handler via `Direct.prototype.delete = request`)
 
 The `not-implemented` placeholder integration is excluded from results.
 
