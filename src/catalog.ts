@@ -1,43 +1,3 @@
-import type { CommandExecutor } from "./types";
-
-const CATALOG_URL =
-  "https://www.twilio.com/docs/segment/connections/destinations/catalog/index-all";
-
-const extractDestinationNames = (html: string): ReadonlyArray<string> => {
-  const names: string[] = [];
-  const linkPattern = /<a[^>]*class="[^"]*destination[^"]*"[^>]*>([^<]+)<\/a>/gi;
-  let match: RegExpExecArray | null;
-
-  while ((match = linkPattern.exec(html)) !== null) {
-    const name = match[1].trim();
-    if (name) names.push(name);
-  }
-
-  if (names.length > 0) return names;
-
-  const listItemPattern = /<li[^>]*>\s*<a[^>]*>([^<]+)<\/a>/gi;
-  while ((match = listItemPattern.exec(html)) !== null) {
-    const name = match[1].trim();
-    if (name) names.push(name);
-  }
-
-  return names;
-};
-
-export const fetchCatalogDestinations = async (
-  execute: CommandExecutor
-): Promise<ReadonlyArray<string>> => {
-  const html = execute(
-    `api --method GET -H "Accept: text/html" "${CATALOG_URL}" 2>/dev/null || echo ""`
-  );
-
-  if (html && html.includes("destination")) {
-    return extractDestinationNames(html);
-  }
-
-  return FALLBACK_CATALOG;
-};
-
 export const FALLBACK_CATALOG: ReadonlyArray<string> = [
   "1Flow",
   "1Flow Mobile Plugin",
@@ -297,8 +257,8 @@ export const FALLBACK_CATALOG: ReadonlyArray<string> = [
   "LogRocket",
   "Loops (Actions)",
   "Lou",
-  "Lumen",
   "Lucky Orange",
+  "Lumen",
   "Lytics",
   "mabl",
   "Madkudu",
@@ -360,13 +320,13 @@ export const FALLBACK_CATALOG: ReadonlyArray<string> = [
   "Pinterest Conversions API",
   "Pinterest Tag",
   "Plotline",
-  "Podsights",
   "Podscribe (Actions)",
+  "Podsights",
   "Pointillist",
   "PostHog",
   "Postscript",
-  "Proof Experiences",
   "ProfitWell",
+  "Proof Experiences",
   "ProsperStack",
   "Pushwoosh",
   "Qualtrics",
@@ -378,9 +338,9 @@ export const FALLBACK_CATALOG: ReadonlyArray<string> = [
   "Reddit Audiences",
   "Reddit Conversions API",
   "Reddit Pixel",
-  "Regal.io",
   "Refersion",
   "Refiner",
+  "Regal.io",
   "Rehook",
   "Repeater",
   "Responsys",
@@ -417,8 +377,8 @@ export const FALLBACK_CATALOG: ReadonlyArray<string> = [
   "Sherlock",
   "SIGNL4 Alerting",
   "SimpleReach",
-  "Singular",
   "SingleStore",
+  "Singular",
   "Skalin",
   "Slack",
   "Slack (Actions)",
@@ -429,33 +389,33 @@ export const FALLBACK_CATALOG: ReadonlyArray<string> = [
   "Snapchat Conversions API",
   "SnapEngage",
   "Spideo",
+  "Split",
   "Sprig (Actions)",
   "Sprig Cloud",
-  "Split",
   "StackAdapt Events & Conversions",
   "Startdeliver",
   "Startdeliver-v2",
   "Statsig",
-  "Stories",
   "Stonly",
+  "Stories",
   "Stormly",
   "Subbly",
   "Survicate",
   "Survicate (Actions)",
   "Swrve",
   "Taboola (Actions)",
+  "Talkable",
   "Talon.One",
   "Talon.One (Actions)",
-  "Talkable",
   "Tamber",
   "Taplytics",
   "The Trade Desk CRM",
-  "Trackier",
-  "TrafficGuard",
   "Track JS",
+  "Trackier",
+  "Tractionboard",
+  "TrafficGuard",
   "tray.io",
   "Treasure Data",
-  "Tractionboard",
   "Trustpilot",
   "TUNE",
   "Twilio Messaging",
@@ -465,8 +425,8 @@ export const FALLBACK_CATALOG: ReadonlyArray<string> = [
   "User.com",
   "UserGuiding",
   "UserIQ",
-  "Userlist",
   "Userlens by Wudpecker",
+  "Userlist",
   "Usermaven (Actions)",
   "UserMotion (Actions)",
   "Userpilot Cloud (Actions)",

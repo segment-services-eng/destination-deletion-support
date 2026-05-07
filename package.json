@@ -19,6 +19,9 @@
     "deletion",
     "privacy"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -12,7 +12,7 @@ See [`deletion-support.md`](./deletion-support.md) for the current list.
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) >= 20
+- [Node.js](https://nodejs.org/) >= 22
 - [GitHub CLI (`gh`)](https://cli.github.com/) authenticated with access to `segmentio` repos
 
 ## Usage
@@ -103,7 +103,7 @@ Destination slugs are converted to human-readable display names using:
 - **GitHub Code Search API limits**: Results are capped at 100 items per query. If the number of destinations with `onDelete` exceeds 100, pagination will need to be added.
 - **Heuristic-based classification**: The regex patterns may miss unconventional implementations (e.g., a destination that calls a helper function which internally makes the request).
 - **Legacy repo access**: The `segmentio/integrations` repo may not be publicly accessible; the script requires appropriate `gh` authentication.
-- **No catalog cross-reference**: Currently we only detect destinations that have code referencing deletion. Destinations that support deletion through other means (e.g., native platform features not reflected in code) won't appear.
+- **Static catalog fallback**: The catalog list is hardcoded and must be manually updated when new destinations are added to Segment's catalog.
 
 ---
 
