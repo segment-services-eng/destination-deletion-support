@@ -22,7 +22,7 @@ This list is derived by scanning source code in:
 | 5 | Aampe | `aampe` | Catalog Only | - | Not Detected |
 | 6 | Aampe (Actions) | `aampe-actions` | Catalog Only | - | Not Detected |
 | 7 | AB Tasty client side | `ab-tasty-client-side` | Catalog Only | - | Not Detected |
-| 8 | Absmartly | `absmartly` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/absmartly/index.ts) | Commented Out |
+| 8 | Absmartly | `absmartly` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/absmartly/index.ts#L107) | Commented Out |
 | 9 | ABsmartly (Actions) | `absmartly-actions` | Catalog Only | - | Not Detected |
 | 10 | Accoil Analytics | `accoil-analytics` | Catalog Only | - | Not Detected |
 | 11 | Acoustic (Actions) | `acoustic-actions` | Catalog Only | - | Not Detected |
@@ -76,7 +76,7 @@ This list is derived by scanning source code in:
 | 59 | Batch (Actions) | `batch-actions` | Catalog Only | - | Not Detected |
 | 60 | Beamer | `beamer` | Catalog Only | - | Not Detected |
 | 61 | Bing Ads | `bing-ads` | Catalog Only | - | Not Detected |
-| 62 | Bing Ads Audiences | `bing-ads-audiences` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/bing-ads-audiences/index.ts) | Commented Out |
+| 62 | Bing Ads Audiences | `bing-ads-audiences` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/bing-ads-audiences/index.ts#L63) | Commented Out |
 | 63 | Blackbaud Raiser's Edge NXT | `blackbaud-raisers-edge-nxt` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/blackbaud-raisers-edge-nxt/index.ts#L53) | Stub/No-Op |
 | 64 | Blend AI | `blend-ai` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/blend-ai/index.ts#L24) | Supported |
 | 65 | Blendo | `blendo` | Catalog Only | - | Not Detected |
@@ -117,7 +117,7 @@ This list is derived by scanning source code in:
 | 100 | Clicky | `clicky` | Catalog Only | - | Not Detected |
 | 101 | Clientsuccess | `clientsuccess` | Legacy Integration | [View](https://github.com/segmentio/integrations/blob/master/createDirectIntegration/index.js) | Supported |
 | 102 | Cliff | `cliff` | Catalog Only | - | Not Detected |
-| 103 | Close | `close` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/close/index.ts) | Commented Out |
+| 103 | Close | `close` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/close/index.ts#L63) | Commented Out |
 | 104 | Collab Travel CRM | `collab-travel-crm` | Catalog Only | - | Not Detected |
 | 105 | CommandBar | `commandbar` | Catalog Only | - | Not Detected |
 | 106 | comScore | `comscore` | Catalog Only | - | Not Detected |
@@ -142,7 +142,7 @@ This list is derived by scanning source code in:
 | 125 | Custify | `custify` | Catalog Only | - | Not Detected |
 | 126 | Customer.io | `customerio` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/customerio/index.ts#L279) | Supported |
 | 127 | Data Lakes | `data-lakes` | Catalog Only | - | Not Detected |
-| 128 | Dawn | `dawn` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/dawn/index.ts) | Commented Out |
+| 128 | Dawn | `dawn` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/dawn/index.ts#L37) | Commented Out |
 | 129 | Delighted | `delighted` | Legacy Integration | [View](https://github.com/segmentio/integrations/blob/master/createDirectIntegration/index.js) | Supported |
 | 130 | Delivr.ai Resolve | `delivr-ai-resolve` | Catalog Only | - | Not Detected |
 | 131 | Directv1 | `directv1` | Legacy Integration | [View](https://github.com/segmentio/integrations/blob/master/createDirectIntegration/index.js) | Supported |
@@ -215,8 +215,8 @@ This list is derived by scanning source code in:
 | 198 | Google Cloud PubSub | `google-cloud-pubsub` | Legacy Integration | [View](https://github.com/segmentio/integrations/blob/master/integrations/google-cloud-pubsub) | Supported |
 | 199 | Google Cloud Storage | `google-cloud-storage` | Catalog Only | - | Not Detected |
 | 200 | Google Data Manager | `google-data-manager` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/google-data-manager/index.ts#L73) | Stub/No-Op |
-| 201 | Google Sheets | `google-sheets` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/google-sheets/index.ts) | Commented Out |
-| 202 | Google Sheets Dev | `google-sheets-dev` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/google-sheets-dev/index.ts) | Commented Out |
+| 201 | Google Sheets | `google-sheets` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/google-sheets/index.ts#L50) | Commented Out |
+| 202 | Google Sheets Dev | `google-sheets-dev` | Action Destination | [View](https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/google-sheets-dev/index.ts#L48) | Commented Out |
 | 203 | Google Tag Manager | `google-tag-manager` | Catalog Only | - | Not Detected |
 | 204 | Gosquared | `gosquared` | Legacy Integration | [View](https://github.com/segmentio/integrations/blob/master/createDirectIntegration/index.js) | Supported |
 | 205 | GraphJSON | `graphjson` | Catalog Only | - | Not Detected |
@@ -529,4 +529,4 @@ This list is derived by scanning source code in:
 | Commented Out | Has a commented-out `onDelete` template |
 | Not Detected | No deletion handler found in source code |
 
-*Generated on: 2026-05-07 20:51:26 UTC*
+*Generated on: 2026-05-07 20:59:22 UTC*
