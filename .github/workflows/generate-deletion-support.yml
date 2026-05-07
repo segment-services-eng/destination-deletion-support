@@ -55,4 +55,4 @@ jobs:
           SHA=$(git rev-parse HEAD)
           gh api repos/${{ github.repository }}/statuses/$SHA -f state=success -f context=test -f description="Tests passed in generate workflow"
           gh pr create --title "Update deletion support list" --body "Automated daily regeneration of deletion-support.md and deletion-support.csv." --base main
-          gh pr merge "$BRANCH" --auto --squash
+          gh pr merge "$BRANCH" --squash --auto || gh pr merge "$BRANCH" --squash
