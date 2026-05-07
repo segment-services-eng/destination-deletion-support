@@ -4,6 +4,7 @@ import { createGitHubClient } from "./github";
 import { scanActionDestinations, scanLegacyIntegrations, deduplicateLegacy, mergeWithCatalog } from "./scanner";
 import { generateMarkdown } from "./markdown";
 import { FALLBACK_CATALOG } from "./catalog";
+import { MANUAL_OVERRIDES } from "./overrides";
 
 const OUTPUT_FILE = "deletion-support.md";
 
@@ -23,7 +24,7 @@ const main = (): void => {
   const actionDests = scanActionDestinations(client);
   const legacyDests = scanLegacyIntegrations(client);
   const uniqueLegacy = deduplicateLegacy(actionDests, legacyDests);
-  const detected = [...actionDests, ...uniqueLegacy];
+  const detected = [...actionDests, ...uniqueLegacy, ...MANUAL_OVERRIDES];
   const allDestinations = mergeWithCatalog(detected, FALLBACK_CATALOG);
 
   const activeCount = allDestinations.filter((d) => d.status === "active").length;

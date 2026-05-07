@@ -2,6 +2,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { generateMarkdown } from "./markdown";
 import type { Destination } from "./types";
 
+const makeDest = (overrides: Partial<Destination> & { slug: string; name: string }): Destination => ({
+  type: "Action Destination",
+  repo: "segmentio/action-destinations",
+  sourceUrl: `https://github.com/segmentio/action-destinations/blob/main/src/${overrides.slug}/index.ts`,
+  status: "active",
+  ...overrides,
+});
+
 describe("generateMarkdown", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -12,10 +20,10 @@ describe("generateMarkdown", () => {
     vi.useRealTimers();
   });
 
-  it("generates header with total and active counts", () => {
+  it("generates header with total and supported counts", () => {
     const destinations: ReadonlyArray<Destination> = [
-      { slug: "braze", name: "Braze", type: "Action Destination", repo: "segmentio/action-destinations", status: "active" },
-      { slug: "dawn", name: "Dawn", type: "Action Destination", repo: "segmentio/action-destinations", status: "commented-out" },
+      makeDest({ slug: "braze", name: "Braze", status: "active" }),
+      makeDest({ slug: "dawn", name: "Dawn", status: "commented-out" }),
     ];
 
     const result = generateMarkdown(destinations);
@@ -26,9 +34,9 @@ describe("generateMarkdown", () => {
 
   it("includes all destinations in a single table with status column", () => {
     const destinations: ReadonlyArray<Destination> = [
-      { slug: "braze", name: "Braze", type: "Action Destination", repo: "segmentio/action-destinations", status: "active" },
-      { slug: "blackbaud", name: "Blackbaud", type: "Action Destination", repo: "segmentio/action-destinations", status: "noop" },
-      { slug: "close", name: "Close", type: "Action Destination", repo: "segmentio/action-destinations", status: "commented-out" },
+      makeDest({ slug: "braze", name: "Braze", status: "active" }),
+      makeDest({ slug: "blackbaud", name: "Blackbaud", status: "noop" }),
+      makeDest({ slug: "close", name: "Close", status: "commented-out" }),
     ];
 
     const result = generateMarkdown(destinations);
@@ -41,9 +49,9 @@ describe("generateMarkdown", () => {
 
   it("sorts all destinations alphabetically by name", () => {
     const destinations: ReadonlyArray<Destination> = [
-      { slug: "zzz", name: "Zzz", type: "Action Destination", repo: "repo", status: "active" },
-      { slug: "aaa", name: "Aaa", type: "Action Destination", repo: "repo", status: "noop" },
-      { slug: "mmm", name: "Mmm", type: "Legacy Integration", repo: "repo", status: "active" },
+      makeDest({ slug: "zzz", name: "Zzz" }),
+      makeDest({ slug: "aaa", name: "Aaa", status: "noop" }),
+      makeDest({ slug: "mmm", name: "Mmm", type: "Legacy Integration" }),
     ];
 
     const result = generateMarkdown(destinations);
@@ -57,8 +65,8 @@ describe("generateMarkdown", () => {
 
   it("numbers rows sequentially", () => {
     const destinations: ReadonlyArray<Destination> = [
-      { slug: "a", name: "Alpha", type: "Action Destination", repo: "repo", status: "active" },
-      { slug: "b", name: "Beta", type: "Action Destination", repo: "repo", status: "active" },
+      makeDest({ slug: "a", name: "Alpha" }),
+      makeDest({ slug: "b", name: "Beta" }),
     ];
 
     const result = generateMarkdown(destinations);
@@ -69,41 +77,45 @@ describe("generateMarkdown", () => {
 
   it("includes timestamp in footer", () => {
     const result = generateMarkdown([]);
-
     expect(result).toContain("*Generated on: 2026-05-07 12:00:00 UTC*");
   });
 
   it("includes status legend in footer", () => {
     const result = generateMarkdown([]);
-
     expect(result).toContain("### Status Legend");
     expect(result).toContain("Has a working `onDelete` handler that makes API calls");
   });
 
   it("handles empty destination list", () => {
     const result = generateMarkdown([]);
-
     expect(result).toContain("**Total: 0** | **Supported: 0**");
     expect(result).toContain("## All Destinations (0)");
   });
 
   it("includes slug in backticks", () => {
     const destinations: ReadonlyArray<Destination> = [
-      { slug: "my-dest", name: "My Dest", type: "Action Destination", repo: "repo", status: "active" },
+      makeDest({ slug: "my-dest", name: "My Dest" }),
     ];
 
     const result = generateMarkdown(destinations);
-
     expect(result).toContain("| `my-dest` |");
   });
 
-  it("includes repository in backticks", () => {
+  it("renders source as a View link for destinations with sourceUrl", () => {
     const destinations: ReadonlyArray<Destination> = [
-      { slug: "test", name: "Test", type: "Legacy Integration", repo: "segmentio/integrations", status: "active" },
+      makeDest({ slug: "test", name: "Test", sourceUrl: "https://github.com/org/repo/blob/main/file.ts" }),
     ];
 
     const result = generateMarkdown(destinations);
+    expect(result).toContain("[View](https://github.com/org/repo/blob/main/file.ts)");
+  });
 
-    expect(result).toContain("| `segmentio/integrations` |");
+  it("renders source as dash for catalog-only destinations", () => {
+    const destinations: ReadonlyArray<Destination> = [
+      makeDest({ slug: "test", name: "Test", sourceUrl: "-", status: "unsupported", type: "Catalog Only" }),
+    ];
+
+    const result = generateMarkdown(destinations);
+    expect(result).toContain("| - | Not Detected |");
   });
 });

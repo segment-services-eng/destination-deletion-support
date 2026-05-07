@@ -7,6 +7,7 @@ export interface Destination {
   readonly name: string;
   readonly type: DestinationType;
   readonly repo: string;
+  readonly sourceUrl: string;
   readonly status: DeletionStatus;
 }
 

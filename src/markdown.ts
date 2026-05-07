@@ -22,11 +22,14 @@ This list is derived by scanning source code in:
 
 ## All Destinations (${total})
 
-| # | Destination | Slug | Type | Repository | Deletion Status |
-|---|-------------|------|------|------------|-----------------|`;
+| # | Destination | Slug | Type | Source | Deletion Status |
+|---|-------------|------|------|--------|-----------------|`;
+
+const formatSource = (dest: Destination): string =>
+  dest.sourceUrl === "-" ? "-" : `[View](${dest.sourceUrl})`;
 
 const toRow = (dest: Destination, index: number): string =>
-  `| ${index + 1} | ${dest.name} | \`${dest.slug}\` | ${dest.type} | \`${dest.repo}\` | ${STATUS_LABELS[dest.status]} |`;
+  `| ${index + 1} | ${dest.name} | \`${dest.slug}\` | ${dest.type} | ${formatSource(dest)} | ${STATUS_LABELS[dest.status]} |`;
 
 const footer = (timestamp: string): string => `
 ---

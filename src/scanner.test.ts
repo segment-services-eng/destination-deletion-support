@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { scanActionDestinations, scanLegacyIntegrations, deduplicateLegacy, mergeWithCatalog, normalizeForComparison } from "./scanner";
+import { scanActionDestinations, scanLegacyIntegrations, deduplicateLegacy, mergeWithCatalog, normalizeForComparison, extractDirectIntegrationSlugs } from "./scanner";
 import type { GitHubClient } from "./github";
 import type { Destination } from "./types";
 
@@ -31,20 +31,20 @@ describe("scanActionDestinations", () => {
     const results = scanActionDestinations(client);
 
     expect(results).toHaveLength(2);
-    expect(results[0]).toEqual({
+    expect(results[0]).toMatchObject({
       slug: "braze",
       name: "Braze",
       type: "Action Destination",
-      repo: "segmentio/action-destinations",
       status: "active",
     });
-    expect(results[1]).toEqual({
+    expect(results[0].sourceUrl).toContain("braze/index.ts");
+    expect(results[1]).toMatchObject({
       slug: "dawn",
       name: "Dawn",
       type: "Action Destination",
-      repo: "segmentio/action-destinations",
       status: "commented-out",
     });
+    expect(results[1].sourceUrl).toContain("dawn/index.ts");
   });
 
   it("skips destinations with empty file content", () => {
@@ -64,19 +64,28 @@ describe("scanActionDestinations", () => {
 });
 
 describe("scanLegacyIntegrations", () => {
-  it("combines prototype.delete and mapper results", () => {
+  it("combines prototype.delete, mapper, class delete, and direct integration results", () => {
+    const directContent = `
+integration('appcues', '554926390a20f4e22f0fb38a', createDirectIntegration('Appcues'))
+integration('castle', '56a8f566e954a874ca44d3b0', createDirectIntegration('Castle'))
+    `;
     const client = createMockClient({
-      searchCode: (_query, _jq) => {
+      searchCode: (_query) => {
         if (_query.includes("prototype.delete")) return ["amplitude", "intercom"];
         if (_query.includes("exports.delete")) return ["intercom", "vero"];
+        if (_query.includes("delete(event)")) return ["vero"];
         return [];
+      },
+      getFileContent: (_repo, path) => {
+        if (path === "integrations/index.js") return directContent;
+        return "";
       },
     });
 
     const results = scanLegacyIntegrations(client);
 
-    expect(results).toHaveLength(3);
-    expect(results.map((d) => d.slug)).toEqual(["amplitude", "intercom", "vero"]);
+    expect(results).toHaveLength(5);
+    expect(results.map((d) => d.slug)).toEqual(["amplitude", "appcues", "castle", "intercom", "vero"]);
     expect(results[0].type).toBe("Legacy Integration");
     expect(results[0].status).toBe("active");
   });
@@ -84,6 +93,7 @@ describe("scanLegacyIntegrations", () => {
   it("filters out not-implemented placeholder", () => {
     const client = createMockClient({
       searchCode: () => ["not-implemented", "amplitude"],
+      getFileContent: () => "",
     });
 
     const results = scanLegacyIntegrations(client);
@@ -91,7 +101,9 @@ describe("scanLegacyIntegrations", () => {
   });
 
   it("returns empty array when no results", () => {
-    const client = createMockClient();
+    const client = createMockClient({
+      getFileContent: () => "",
+    });
     expect(scanLegacyIntegrations(client)).toEqual([]);
   });
 });
@@ -102,6 +114,7 @@ describe("deduplicateLegacy", () => {
     name: slug,
     type: "Action Destination",
     repo: "segmentio/action-destinations",
+    sourceUrl: "https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/braze/index.ts",
     status: "active",
   });
 
@@ -110,6 +123,7 @@ describe("deduplicateLegacy", () => {
     name: slug,
     type: "Legacy Integration",
     repo: "segmentio/integrations",
+    sourceUrl: `https://github.com/segmentio/integrations/blob/master/integrations/${slug}`,
     status: "active",
   });
 
@@ -146,6 +160,41 @@ describe("deduplicateLegacy", () => {
   });
 });
 
+describe("extractDirectIntegrationSlugs", () => {
+  it("extracts slugs from createDirectIntegration lines", () => {
+    const content = `
+const createDirectIntegration = require('../createDirectIntegration')
+integration('appcues', '554926390a20f4e22f0fb38a', createDirectIntegration('Appcues'))
+integration('castle', '56a8f566e954a874ca44d3b0', createDirectIntegration('Castle'))
+integration('chameleon', '555a14f80a20f4e22f0fb38d', createDirectIntegration('Chameleon'))
+    `;
+
+    const result = extractDirectIntegrationSlugs(content);
+    expect(result).toEqual(["appcues", "castle", "chameleon"]);
+  });
+
+  it("ignores non-createDirectIntegration lines", () => {
+    const content = `
+const createDirectIntegration = require('../createDirectIntegration')
+integration('amplitude', '123', require('./integrations/amplitude'))
+integration('appcues', '456', createDirectIntegration('Appcues'))
+    `;
+
+    const result = extractDirectIntegrationSlugs(content);
+    expect(result).toEqual(["appcues"]);
+  });
+
+  it("returns empty array for empty content", () => {
+    expect(extractDirectIntegrationSlugs("")).toEqual([]);
+  });
+
+  it("handles the require line without matching", () => {
+    const content = "const createDirectIntegration = require('../createDirectIntegration')";
+    const result = extractDirectIntegrationSlugs(content);
+    expect(result).toEqual([]);
+  });
+});
+
 describe("normalizeForComparison", () => {
   it("lowercases and strips non-alphanumeric characters", () => {
     expect(normalizeForComparison("Customer.io")).toBe("customerio");
@@ -164,6 +213,7 @@ describe("mergeWithCatalog", () => {
     name,
     type: "Action Destination",
     repo: "segmentio/action-destinations",
+    sourceUrl: "https://github.com/segmentio/action-destinations/blob/main/packages/destination-actions/src/destinations/braze/index.ts",
     status: "active",
   });
 
@@ -187,10 +237,10 @@ describe("mergeWithCatalog", () => {
 
     const result = mergeWithCatalog(detected, catalog);
 
-    expect(result).toHaveLength(2);
+    // Both "Customer.io" (normalized match) and "Customer.io (Actions)" (alias match)
+    // are recognized as already detected
+    expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Customer.io");
-    expect(result[1].name).toBe("Customer.io (Actions)");
-    expect(result[1].status).toBe("unsupported");
   });
 
   it("matches by normalized slug against catalog name", () => {
@@ -233,5 +283,30 @@ describe("mergeWithCatalog", () => {
     const result = mergeWithCatalog([], ["Mixpanel"]);
 
     expect(result[0].repo).toBe("-");
+  });
+
+  it("uses alias mapping to match catalog names to detected slugs", () => {
+    const detected = [makeDetected("braze", "Braze")];
+    const catalog = ["Braze Cloud Mode (Actions)", "Mixpanel"];
+
+    const result = mergeWithCatalog(detected, catalog);
+
+    expect(result).toHaveLength(2);
+    expect(result[0].name).toBe("Braze");
+    expect(result[1].name).toBe("Mixpanel");
+    expect(result[1].status).toBe("unsupported");
+  });
+
+  it("excludes aliased catalog entries that map to detected destinations", () => {
+    const detected = [
+      makeDetected("amplitude", "Amplitude"),
+      makeDetected("fullstory", "FullStory"),
+    ];
+    const catalog = ["Amplitude (Actions)", "Fullstory Cloud Mode (Actions)", "New Dest"];
+
+    const result = mergeWithCatalog(detected, catalog);
+
+    expect(result).toHaveLength(3);
+    expect(result[2].name).toBe("New Dest");
   });
 });

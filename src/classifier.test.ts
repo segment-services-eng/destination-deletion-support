@@ -8,7 +8,9 @@ describe("classifyDestination", () => {
       //   return request('https://example.com/delete')
       // },
     `;
-    expect(classifyDestination(content)).toBe("commented-out");
+    const result = classifyDestination(content);
+    expect(result.status).toBe("commented-out");
+    expect(result.lineNumber).toBeUndefined();
   });
 
   it("returns 'commented-out' when no onDelete line is found at all", () => {
@@ -18,10 +20,12 @@ describe("classifyDestination", () => {
         actions: {}
       };
     `;
-    expect(classifyDestination(content)).toBe("commented-out");
+    const result = classifyDestination(content);
+    expect(result.status).toBe("commented-out");
+    expect(result.lineNumber).toBeUndefined();
   });
 
-  it("returns 'active' when onDelete makes a request() call", () => {
+  it("returns 'active' with line number when onDelete makes a request() call", () => {
     const content = `
   onDelete: async (request, { payload }) => {
     return request('https://api.example.com/delete', {
@@ -30,7 +34,9 @@ describe("classifyDestination", () => {
     })
   },
     `;
-    expect(classifyDestination(content)).toBe("active");
+    const result = classifyDestination(content);
+    expect(result.status).toBe("active");
+    expect(result.lineNumber).toBe(2);
   });
 
   it("returns 'active' when onDelete uses payload.userId", () => {
@@ -40,7 +46,7 @@ describe("classifyDestination", () => {
     return request(\`/users/\${id}\`)
   },
     `;
-    expect(classifyDestination(content)).toBe("active");
+    expect(classifyDestination(content).status).toBe("active");
   });
 
   it("returns 'active' when onDelete uses payload.anonymousId", () => {
@@ -50,7 +56,7 @@ describe("classifyDestination", () => {
     return request(\`/anon/\${id}\`)
   },
     `;
-    expect(classifyDestination(content)).toBe("active");
+    expect(classifyDestination(content).status).toBe("active");
   });
 
   it("returns 'active' when onDelete uses payload[] bracket access", () => {
@@ -60,7 +66,7 @@ describe("classifyDestination", () => {
     return true
   },
     `;
-    expect(classifyDestination(content)).toBe("active");
+    expect(classifyDestination(content).status).toBe("active");
   });
 
   it("returns 'active' when onDelete uses fetch()", () => {
@@ -69,7 +75,7 @@ describe("classifyDestination", () => {
     await fetch('https://api.example.com/delete')
   },
     `;
-    expect(classifyDestination(content)).toBe("active");
+    expect(classifyDestination(content).status).toBe("active");
   });
 
   it("returns 'active' when onDelete uses .delete() method", () => {
@@ -78,7 +84,7 @@ describe("classifyDestination", () => {
     await client.delete('/user/123')
   },
     `;
-    expect(classifyDestination(content)).toBe("active");
+    expect(classifyDestination(content).status).toBe("active");
   });
 
   it("returns 'active' when onDelete uses .post() method", () => {
@@ -87,7 +93,7 @@ describe("classifyDestination", () => {
     await client.post('/gdpr/delete', { userId: '123' })
   },
     `;
-    expect(classifyDestination(content)).toBe("active");
+    expect(classifyDestination(content).status).toBe("active");
   });
 
   it("returns 'active' when onDelete uses .put() method", () => {
@@ -96,7 +102,7 @@ describe("classifyDestination", () => {
     await client.put('/user/anonymize', {})
   },
     `;
-    expect(classifyDestination(content)).toBe("active");
+    expect(classifyDestination(content).status).toBe("active");
   });
 
   it("returns 'active' when onDelete is delegated to a named function", () => {
@@ -104,10 +110,12 @@ describe("classifyDestination", () => {
   onDelete: deleteUser,
   actions: {}
     `;
-    expect(classifyDestination(content)).toBe("active");
+    const result = classifyDestination(content);
+    expect(result.status).toBe("active");
+    expect(result.lineNumber).toBe(2);
   });
 
-  it("returns 'noop' when onDelete is declared but empty", () => {
+  it("returns 'noop' with line number when onDelete is declared but empty", () => {
     const content = `
   onDelete: async () => {
     // Return a request that performs a GDPR delete for the provided Segment userId or anonymousId
@@ -117,7 +125,9 @@ describe("classifyDestination", () => {
 
   actions: {
     `;
-    expect(classifyDestination(content)).toBe("noop");
+    const result = classifyDestination(content);
+    expect(result.status).toBe("noop");
+    expect(result.lineNumber).toBe(2);
   });
 
   it("returns 'noop' when onDelete only contains comments", () => {
@@ -128,6 +138,6 @@ describe("classifyDestination", () => {
 
   actions: {
     `;
-    expect(classifyDestination(content)).toBe("noop");
+    expect(classifyDestination(content).status).toBe("noop");
   });
 });

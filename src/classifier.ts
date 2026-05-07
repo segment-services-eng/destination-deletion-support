@@ -23,18 +23,25 @@ const hasImplementation = (block: string, onDeleteLine: string): boolean => {
   );
 };
 
-export const classifyDestination = (content: string): DeletionStatus => {
+export interface ClassificationResult {
+  readonly status: DeletionStatus;
+  readonly lineNumber: number | undefined;
+}
+
+export const classifyDestination = (content: string): ClassificationResult => {
   const lines = content.split("\n");
   const onDeleteIdx = lines.findIndex(
     (line) => /onDelete/.test(line) && !/^\s*\/\//.test(line)
   );
 
   if (onDeleteIdx === -1) {
-    return "commented-out";
+    return { status: "commented-out", lineNumber: undefined };
   }
 
   const block = lines.slice(onDeleteIdx, onDeleteIdx + 15).join("\n");
   const onDeleteLine = lines[onDeleteIdx];
+  const lineNumber = onDeleteIdx + 1;
 
-  return hasImplementation(block, onDeleteLine) ? "active" : "noop";
+  const status = hasImplementation(block, onDeleteLine) ? "active" : "noop";
+  return { status, lineNumber };
 };
