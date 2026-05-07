@@ -1,0 +1,31 @@
+name: Generate Deletion Support List
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # Daily at 8:00 UTC
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate deletion support list
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node generate-deletion-support.mjs
+
+      - name: Upload deletion support list
+        uses: actions/upload-artifact@v4
+        with:
+          name: deletion-support-${{ github.run_id }}
+          path: deletion-support.md
+          retention-days: 90
