@@ -47,6 +47,22 @@ describe("scanActionDestinations", () => {
     expect(results[1].sourceUrl).toContain("dawn/index.ts");
   });
 
+  it("generates sourceUrl without line number when no onDelete reference exists", () => {
+    const client = createMockClient({
+      searchCode: () => ["nodeletion"],
+      getFileContent: () => `
+const destination = { name: 'NoDelete', actions: {} };
+export default destination;
+      `,
+    });
+
+    const results = scanActionDestinations(client);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].sourceUrl).not.toContain("#L");
+    expect(results[0].status).toBe("commented-out");
+  });
+
   it("skips destinations with empty file content", () => {
     const client = createMockClient({
       searchCode: () => ["missing-dest"],

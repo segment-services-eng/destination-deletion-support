@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { classifyDestination } from "./classifier";
 
 describe("classifyDestination", () => {
-  it("returns 'commented-out' when onDelete is fully commented", () => {
+  it("returns 'commented-out' with line number when onDelete is fully commented", () => {
     const content = `
       // onDelete: async (request, { settings, payload }) => {
       //   return request('https://example.com/delete')
@@ -10,10 +10,10 @@ describe("classifyDestination", () => {
     `;
     const result = classifyDestination(content);
     expect(result.status).toBe("commented-out");
-    expect(result.lineNumber).toBeUndefined();
+    expect(result.lineNumber).toBe(2);
   });
 
-  it("returns 'commented-out' when no onDelete line is found at all", () => {
+  it("returns 'commented-out' with no line number when no onDelete exists at all", () => {
     const content = `
       const destination = {
         name: 'Test',

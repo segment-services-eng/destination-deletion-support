@@ -35,7 +35,8 @@ export const classifyDestination = (content: string): ClassificationResult => {
   );
 
   if (onDeleteIdx === -1) {
-    return { status: "commented-out", lineNumber: undefined };
+    const commentedIdx = lines.findIndex((line) => /onDelete/.test(line));
+    return { status: "commented-out", lineNumber: commentedIdx !== -1 ? commentedIdx + 1 : undefined };
   }
 
   const block = lines.slice(onDeleteIdx, onDeleteIdx + 15).join("\n");
