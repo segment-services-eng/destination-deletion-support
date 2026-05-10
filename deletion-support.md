@@ -529,4 +529,4 @@ This list is derived by scanning source code in:
 | Commented Out | Has a commented-out `onDelete` template |
 | Not Detected | No deletion handler found in source code |
 
-*Generated on: 2026-05-09 08:32:23 UTC*
+*Generated on: 2026-05-10 08:36:40 UTC*
